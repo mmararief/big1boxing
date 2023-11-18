@@ -1,3 +1,4 @@
+import { FormCard } from "@/components/FormCard"
 import Form from "@/components/form"
 
 export default function EventPage() {
@@ -14,8 +15,9 @@ export default function EventPage() {
             Register now before the slots are full.
           </p>
         </div>
+        {/* <Form /> */}
+        <FormCard />
       </section>
-      <Form />
     </>
   )
 }
