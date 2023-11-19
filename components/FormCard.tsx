@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { useEffect } from "react"
+import axios from "axios"
 import { FaSpinner } from "react-icons/fa"
 
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -13,7 +14,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/Card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -21,9 +24,88 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function FormCard({ className, ...props }: UserAuthFormProps) {
   const { toast } = useToast()
+  const [weight, setWeight] = React.useState<string>("")
+  const [email, setEmail] = React.useState<string>("")
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [npm, setNpm] = React.useState<string>("")
-  const [data, setData] = React.useState<{
+  const [token, setToken] = React.useState<string>("")
+  const [isInputFocused, setIsInputFocused] = React.useState(false)
+  const process = async () => {
+    const data = {
+      nama: datas ? datas.nama : "",
+      // npm: npm,
+      order_id: npm,
+
+      // kelas: datas ? datas.kelasBaru : "",
+      // weight: weight,
+      total: 5000,
+      email: email,
+    }
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+    try {
+      const response = await axios.post(
+        "https://frightened-hare-wrap.cyclic.app/api/payment/process-transaction",
+        data,
+        config
+      )
+
+      setToken(response.data.token)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "transaction_details.order_id sudah digunakan",
+        variant: "destructive",
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (token) {
+      window.snap.pay(
+        token,
+        {
+          onSuccess: (result: any) => {
+            localStorage.setItem("Pembayaran", JSON.stringify(result))
+            setToken("")
+          },
+          onPending: (result: any) => {
+            localStorage.setItem("Pembayaran", JSON.stringify(result))
+            setToken("")
+          },
+          onError: (error: any) => {
+            console.log(error)
+            setToken("")
+          },
+          onClose: () => {
+            console.log("Anda belum menyelesaikan pembayaran")
+            setToken("")
+          },
+        },
+        {
+          // Additional configuration options if needed
+        }
+      )
+      setNpm("")
+    }
+  }, [token])
+
+  useEffect(() => {
+    const scriptTag = document.createElement("script")
+    scriptTag.src = "https://app.sandbox.midtrans.com/snap/snap.js"
+    scriptTag.async = true
+
+    document.body.appendChild(scriptTag)
+
+    return () => {
+      document.body.removeChild(scriptTag)
+    }
+  }, [])
+
+  const [datas, setdatas] = React.useState<{
     npm: string
     nama: string
     kelasBaru: string
@@ -38,11 +120,12 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
       const response = await fetch(
         `https://frightened-hare-wrap.cyclic.app/api/mahasiswa/${npm}`
       )
+      console.log(response)
       const result = await response.json()
 
       // Assuming the API response structure is similar to your example
       if (result && result.length > 0) {
-        setData(result[0])
+        setdatas(result[0])
         toast({
           title: "Success",
           description: "NPM found in gunadarma",
@@ -53,15 +136,15 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
           description: "NPM not found in gunadarma",
           variant: "destructive",
         })
-        setData(null)
+        setdatas(null)
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error fetching data from API",
+        description: "Error fetching datas from API",
         variant: "destructive",
       })
-      console.error("Error fetching data from API:", error)
+      console.error("Error fetching datas from API:", error)
     }
 
     setIsLoading(false)
@@ -76,30 +159,47 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="grid w-full items-center gap-4">
+            {isInputFocused && (
+              <Alert>
+                <AlertTitle>Note!</AlertTitle>
+                <AlertDescription>
+                  Use a space when you have finished filling in the NPM.
+                </AlertDescription>
+              </Alert>
+            )}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="npm">NPM</Label>
-              <div className="flex justify-between">
+
+              <div className="flex flex-col space-y-1.5">
                 <Input
                   id="npm"
                   placeholder="Your NPM"
                   type="text"
-                  width={80}
-                  autoCapitalize="none"
                   value={npm}
-                  onChange={(e) => setNpm(e.target.value)}
-                  disabled={isLoading || data !== null}
-                  className="w-[75%]"
+                  onChange={(e) => {
+                    setNpm(e.target.value)
+
+                    if (e.target.value.length === 9) {
+                      onSubmit(e)
+                      setIsInputFocused(false)
+                    }
+                  }}
+                  disabled={isLoading || datas !== null}
+                  className="w-[100%]"
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
                 />
-                {data === null && (
+
+                {/* {datas === null && (
                   <Button className="text-xs" disabled={isLoading}>
                     {isLoading && (
                       <FaSpinner className="mr-2 h-4 w-4 animate-spin text-xs" />
                     )}
                     Check NPM
                   </Button>
-                )}
+                )} */}
               </div>
             </div>
 
@@ -110,7 +210,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
                 placeholder="Your Name"
                 type="text"
                 autoCapitalize="none"
-                value={data ? data.nama : ""}
+                value={datas ? datas.nama : ""}
                 disabled={true}
               />
             </div>
@@ -121,10 +221,40 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
                 placeholder="Your Class"
                 type="text"
                 autoCapitalize="none"
-                value={data ? data.kelasBaru : ""}
+                value={datas ? datas.kelasBaru : ""}
                 disabled={true}
               />
             </div>
+            {datas && (
+              <>
+                <Label htmlFor="weight">Weight</Label>
+                <Input
+                  id="weight"
+                  placeholder="Your Weight"
+                  type="number"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                />
+                <Label htmlFor="weight">Email</Label>
+                <Input
+                  id="email"
+                  placeholder="Your Email"
+                  type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <Button
+                  onClick={process}
+                  className={buttonVariants()}
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <FaSpinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Submit
+                </Button>
+              </>
+            )}
           </div>
         </form>
       </CardContent>
