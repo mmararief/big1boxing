@@ -30,6 +30,20 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
   const [npm, setNpm] = React.useState<string>("")
   const [token, setToken] = React.useState<string>("")
   const [isInputFocused, setIsInputFocused] = React.useState(false)
+
+  const sendemail = async () => {
+    const data = {
+      nama: datas ? datas.nama : "",
+      total: 5000,
+      email: email,
+    }
+
+    const response = await axios.post(
+      "https://frightened-hare-wrap.cyclic.app/api/checkout/sendemail",
+      data
+    )
+    console.log(response)
+  }
   const process = async () => {
     const data = {
       nama: datas ? datas.nama : "",
@@ -65,6 +79,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
 
   useEffect(() => {
     if (token) {
+      sendemail()
       window.snap.pay(
         token,
         {
