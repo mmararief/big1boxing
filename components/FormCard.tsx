@@ -95,7 +95,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
 
   useEffect(() => {
     const scriptTag = document.createElement("script")
-    scriptTag.src = "https://app.sandbox.midtrans.com/snap/snap.js"
+    scriptTag.src = "https://app.midtrans.com/snap/snap.js"
     scriptTag.async = true
 
     document.body.appendChild(scriptTag)
