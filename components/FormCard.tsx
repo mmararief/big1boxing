@@ -34,7 +34,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
     const data = {
       nama: datas ? datas.nama : "",
       // npm: npm,
-      order_id: npm,
+      // order_id: npm,
 
       // kelas: datas ? datas.kelasBaru : "",
       // weight: weight,
