@@ -4,8 +4,8 @@ import * as React from "react"
 import { useEffect } from "react"
 import axios from "axios"
 import { FaSpinner } from "react-icons/fa"
+import uniqid from "uniqid"
 
-import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -26,35 +26,38 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
   const { toast } = useToast()
   const [weight, setWeight] = React.useState<string>("")
   const [email, setEmail] = React.useState<string>("")
+
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [npm, setNpm] = React.useState<string>("")
   const [token, setToken] = React.useState<string>("")
   const [isInputFocused, setIsInputFocused] = React.useState(false)
+  var order_id = "ORDER-" + uniqid()
 
-  const sendemail = async () => {
-    const data = {
-      nama: datas ? datas.nama : "",
-      total: 5000,
-      email: email,
-    }
-
-    const response = await axios.post(
-      "https://frightened-hare-wrap.cyclic.app/api/checkout/sendemail",
-      data
-    )
-    console.log(response)
-  }
+  // const postdata = async () => {
+  //   const data = {
+  //     order_id: order_id,
+  //     name: datas ? datas.nama : "",
+  //     total: 5000,
+  //     email: email,
+  //     npm: npm,
+  //     status: "unpaid",
+  //   }
+  //   const res = await axios.post("/api", data)
+  //   // const response = await axios.post(
+  //   //   "https://frightened-hare-wrap.cyclic.app/api/checkout/sendemail",
+  //   //   data
+  //   // )
+  // }
   const process = async () => {
     const data = {
-      nama: datas ? datas.nama : "",
-      // npm: npm,
-      // order_id: npm,
-
-      // kelas: datas ? datas.kelasBaru : "",
-      // weight: weight,
+      order_id: order_id,
+      name: datas ? datas.nama : "",
       total: 5000,
       email: email,
+      npm: npm,
+      status: "unpaid",
     }
+
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -66,8 +69,10 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
         data,
         config
       )
+      console.log(response.data.token)
 
       setToken(response.data.token)
+      const res = await axios.post("/api", data)
     } catch (error) {
       toast({
         title: "Error",
@@ -79,7 +84,8 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
 
   useEffect(() => {
     if (token) {
-      sendemail()
+      // postdata()
+
       window.snap.pay(
         token,
         {
@@ -110,7 +116,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
 
   useEffect(() => {
     const scriptTag = document.createElement("script")
-    scriptTag.src = "https://app.midtrans.com/snap/snap.js"
+    scriptTag.src = "https://app.sandbox.midtrans.com/snap/snap.js"
     scriptTag.async = true
 
     document.body.appendChild(scriptTag)
@@ -130,7 +136,6 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
     event.preventDefault()
     setIsLoading(true)
 
-    // Simulate API request (replace with actual API call)
     try {
       const response = await fetch(
         `https://frightened-hare-wrap.cyclic.app/api/mahasiswa/${npm}`
@@ -138,7 +143,6 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
       console.log(response)
       const result = await response.json()
 
-      // Assuming the API response structure is similar to your example
       if (result && result.length > 0) {
         setdatas(result[0])
         toast({
@@ -178,7 +182,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
           <div className="grid w-full items-center gap-4">
             {isInputFocused && (
               <Alert>
-                <AlertTitle>Note!</AlertTitle>
+                <AlertTitle>Note !</AlertTitle>
                 <AlertDescription>
                   Use a space when you have finished filling in the NPM.
                 </AlertDescription>
