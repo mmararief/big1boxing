@@ -33,21 +33,6 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
   const [isInputFocused, setIsInputFocused] = React.useState(false)
   var order_id = "ORDER-" + uniqid()
 
-  // const postdata = async () => {
-  //   const data = {
-  //     order_id: order_id,
-  //     name: datas ? datas.nama : "",
-  //     total: 5000,
-  //     email: email,
-  //     npm: npm,
-  //     status: "unpaid",
-  //   }
-  //   const res = await axios.post("/api", data)
-  //   // const response = await axios.post(
-  //   //   "https://frightened-hare-wrap.cyclic.app/api/checkout/sendemail",
-  //   //   data
-  //   // )
-  // }
   const process = async () => {
     const data = {
       order_id: order_id,
@@ -84,8 +69,6 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
 
   useEffect(() => {
     if (token) {
-      // postdata()
-
       window.snap.pay(
         token,
         {
@@ -116,7 +99,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
 
   useEffect(() => {
     const scriptTag = document.createElement("script")
-    scriptTag.src = "https://app.sandbox.midtrans.com/snap/snap.js"
+    scriptTag.src = "https://app.midtrans.com/snap/snap.js"
     scriptTag.async = true
 
     document.body.appendChild(scriptTag)

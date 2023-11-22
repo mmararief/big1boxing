@@ -46,10 +46,10 @@ const RegisteredPage = async () => {
               <TableHead>NPM</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="font-small text-sm">
             {users.map((user, index) => (
               <TableRow key={user.order_id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 {/* <TableCell>{user.email}</TableCell> */}
                 <TableCell>{user.npm}</TableCell>
