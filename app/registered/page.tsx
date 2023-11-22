@@ -42,7 +42,7 @@ const RegisteredPage = async () => {
             <TableRow>
               <TableHead className="w-[100px]">No</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
+              {/* <TableHead>Email</TableHead> */}
               <TableHead>NPM</TableHead>
             </TableRow>
           </TableHeader>
@@ -51,7 +51,7 @@ const RegisteredPage = async () => {
               <TableRow key={user.order_id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
+                {/* <TableCell>{user.email}</TableCell> */}
                 <TableCell>{user.npm}</TableCell>
               </TableRow>
             ))}
