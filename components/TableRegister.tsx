@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client"
+import { GetServerSideProps } from "next"
+import { PrismaClient, UserPayment } from "@prisma/client"
 
 import {
   Table,
@@ -12,18 +13,26 @@ import {
 
 const prisma = new PrismaClient()
 
-const getUser = async () => {
-  const res = await prisma.userPayment.findMany({
+export const getServerSideProps: GetServerSideProps = async () => {
+  const users = await prisma.userPayment.findMany({
     where: {
       payment_status: "success",
     },
   })
-  return res
-}
-const TableRegister = async () => {
-  const users = await getUser()
-  console.log(users)
 
+  return {
+    props: {
+      users,
+    },
+  }
+}
+
+type Props = {
+  users: UserPayment[]
+}
+
+const TableRegister: React.FC<Props> = (props) => {
+  console.log(props.users)
   return (
     <>
       <Table>
@@ -39,7 +48,7 @@ const TableRegister = async () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user) => (
+          {props.users.map((user) => (
             <TableRow key={user.order_id}>
               <TableCell className="font-medium">{user.order_id}</TableCell>
               <TableCell>{user.name}</TableCell>
@@ -52,5 +61,4 @@ const TableRegister = async () => {
     </>
   )
 }
-
 export default TableRegister

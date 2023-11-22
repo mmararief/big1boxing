@@ -20,6 +20,7 @@ export default function EventPage() {
         {/* <Form /> */}
         <FormCard />
       </section>
+      
     </>
   )
 }
