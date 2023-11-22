@@ -18,14 +18,14 @@ interface User {
 async function getUser() {
   const res = await fetch(
     "https://frightened-hare-wrap.cyclic.app/api/midtrans/getuser",
-    { cache: "force-cache" }
+    { next: { revalidate: 0 } }
   )
   return res.json()
 }
 
 const RegisteredPage = async () => {
   const users = (await getUser()) as User[]
-  console.log(users)
+
   return (
     <>
       <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
