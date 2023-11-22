@@ -1,6 +1,3 @@
-import { GetServerSideProps } from "next"
-import { PrismaClient, UserPayment } from "@prisma/client"
-
 import {
   Table,
   TableBody,
@@ -11,26 +8,24 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-const prisma = new PrismaClient()
-
-const getUser = async () => {
-  const users = await prisma.userPayment.findMany({
-    where: {
-      payment_status: "success",
-    },
-    select: {
-      order_id: true,
-      name: true,
-      email: true,
-      npm: true,
-    },
-  })
-
-  return users
+interface User {
+  order_id: number
+  name: string
+  email: string
+  npm: string
+  total: number
+}
+async function getUser() {
+  const res = await fetch(
+    "https://frightened-hare-wrap.cyclic.app/api/midtrans/getuser",
+    { cache: "force-cache" }
+  )
+  return res.json()
 }
 
 const RegisteredPage = async () => {
-  const users = await getUser()
+  const users = (await getUser()) as User[]
+  console.log(users)
   return (
     <>
       <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
