@@ -18,7 +18,7 @@ interface User {
 async function getUser() {
   const res = await fetch(
     "https://frightened-hare-wrap.cyclic.app/api/midtrans/getuser",
-    { next: { revalidate: 0 } }
+    { next: { revalidate: 60 } }
   )
   return res.json()
 }

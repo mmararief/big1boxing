@@ -2,9 +2,10 @@
 
 import * as React from "react"
 import { useEffect } from "react"
+import { PrismaClient } from "@prisma/client"
 import axios from "axios"
 import { FaSpinner } from "react-icons/fa"
-import uniqid from "uniqid"
+import { v4 as uuid } from "uuid"
 
 import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -20,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+const prisma = new PrismaClient()
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function FormCard({ className, ...props }: UserAuthFormProps) {
@@ -31,7 +33,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
   const [npm, setNpm] = React.useState<string>("")
   const [token, setToken] = React.useState<string>("")
   const [isInputFocused, setIsInputFocused] = React.useState(false)
-  var order_id = "ORDER-" + uniqid()
+  var order_id = uuid()
 
   const process = async () => {
     const data = {
@@ -73,20 +75,38 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
         token,
         {
           onSuccess: (result: any) => {
-            localStorage.setItem("Pembayaran", JSON.stringify(result))
-            setToken("")
+            toast({
+              title: "Success",
+              description: "Payment Success!",
+            })
+            console.log(result)
+            // setToken("")
           },
           onPending: (result: any) => {
-            localStorage.setItem("Pembayaran", JSON.stringify(result))
-            setToken("")
+            toast({
+              title: "Pending",
+              description: "waiting your payment!",
+            })
+            console.log(result)
+            // setToken("")
           },
           onError: (error: any) => {
+            toast({
+              title: "Error",
+              description: "Payment Failed!",
+              variant: "destructive",
+            })
+
             console.log(error)
-            setToken("")
+            // setToken("")
           },
           onClose: () => {
-            console.log("Anda belum menyelesaikan pembayaran")
-            setToken("")
+            toast({
+              title: "Error",
+              description: "Payment is not complete!",
+              variant: "destructive",
+            })
+            // setToken("")
           },
         },
         {
