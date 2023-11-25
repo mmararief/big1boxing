@@ -15,6 +15,7 @@ model UserPayment {
   npm            String
   total          Int
   payment_status String
+  weight         String
   createdAt      DateTime @default(now())
   updateAt       DateTime @updatedAt
 }

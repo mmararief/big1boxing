@@ -36,36 +36,82 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
   var order_id = uuid()
 
   const process = async () => {
-    const data = {
-      order_id: order_id,
-      name: datas ? datas.nama : "",
-      total: 5000,
-      email: email,
-      npm: npm,
-      status: "unpaid",
-    }
+    if (!token) {
+      const data = {
+        order_id: order_id,
+        name: datas ? datas.nama : "",
+        total: 5000,
+        email: email,
+        npm: npm,
+        status: "unpaid",
+        weight: weight,
+      }
 
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-    try {
-      const response = await axios.post(
-        "https://frightened-hare-wrap.cyclic.app/api/payment/process-transaction",
-        data,
-        config
+      console.log("ini data", data)
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+      try {
+        const response = await axios.post(
+          "https://frightened-hare-wrap.cyclic.app/api/payment/process-transaction",
+          data,
+          config
+        )
+        console.log(response.data.token)
+
+        setToken(response.data.token)
+        const res = await axios.post("/api", data)
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "silahkan mengisi form dengan benar",
+          variant: "destructive",
+        })
+      }
+    } else {
+      window.snap.pay(
+        token,
+        {
+          onSuccess: (result: any) => {
+            toast({
+              title: "Success",
+              description: "Payment Success!",
+            })
+            console.log(result)
+            setToken("")
+          },
+          onPending: (result: any) => {
+            toast({
+              title: "Pending",
+              description: "waiting your payment!",
+            })
+            console.log(result)
+          },
+          onError: (error: any) => {
+            toast({
+              title: "Error",
+              description: "Payment Failed!",
+              variant: "destructive",
+            })
+
+            console.log(error)
+            setToken("")
+          },
+          onClose: () => {
+            toast({
+              title: "Error",
+              description: "Payment is not complete!",
+              variant: "destructive",
+            })
+          },
+        },
+        {
+          // Additional configuration options if needed
+        }
       )
-      console.log(response.data.token)
-
-      setToken(response.data.token)
-      const res = await axios.post("/api", data)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "transaction_details.order_id sudah digunakan",
-        variant: "destructive",
-      })
     }
   }
 
@@ -80,7 +126,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
               description: "Payment Success!",
             })
             console.log(result)
-            // setToken("")
+            setToken("")
           },
           onPending: (result: any) => {
             toast({
@@ -88,7 +134,6 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
               description: "waiting your payment!",
             })
             console.log(result)
-            // setToken("")
           },
           onError: (error: any) => {
             toast({
@@ -98,7 +143,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
             })
 
             console.log(error)
-            // setToken("")
+            setToken("")
           },
           onClose: () => {
             toast({
@@ -106,14 +151,12 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
               description: "Payment is not complete!",
               variant: "destructive",
             })
-            // setToken("")
           },
         },
         {
           // Additional configuration options if needed
         }
       )
-      setNpm("")
     }
   }, [token])
 
@@ -253,9 +296,10 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
                 <Input
                   id="weight"
                   placeholder="Your Weight"
-                  type="number"
+                  type="text"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
+                  required
                 />
                 <Label htmlFor="weight">Email</Label>
                 <Input
@@ -264,6 +308,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
                 <Button
                   onClick={process}
