@@ -39,7 +39,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
       const data = {
         order_id: order_id,
         name: datas ? datas.nama : "",
-        total: 5000,
+        total: 10000,
         email: email,
         npm: npm,
         status: "unpaid",
@@ -124,6 +124,15 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
               title: "Success",
               description: "Payment Success!",
             })
+            const data = {
+              email: email,
+              name: datas ? datas.nama : "",
+              total: 10000,
+            }
+            const response = axios.post(
+              "https://frightened-hare-wrap.cyclic.app/api/email/sendemail",
+              data
+            )
             console.log(result)
             setToken("")
           },
