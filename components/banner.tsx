@@ -9,7 +9,7 @@ import { buttonVariants } from "@/components/ui/button"
 export default function Banner() {
   return (
     <>
-      <div className="hero mx-auto w-[80%] bg-gray-100 py-16">
+      <div className="hero background-image: url('/Sports2.jpg') mx-auto w-[80%]">
         <div className="container mx-auto px-4 sm:px-8 lg:px-16 xl:px-20">
           <div className="hero-wrapper grid grid-cols-1 items-center gap-8 md:grid-cols-12">
             <div className="hero-text col-span-6">
@@ -26,15 +26,19 @@ export default function Banner() {
               <p className="mt-8 text-base font-semibold leading-relaxed text-gray-800">
                 Unofficial Inter-class boxing competition.
               </p>
-              <div className=" flex w-[50%] justify-between">
-                <div className="py-10 ">
-                  <Link href="/buytickets" className={buttonVariants()} replace>
-                    join as a spectator
-                  </Link>
-                </div>
+              <div className=" flex  justify-between">
                 <div className="py-10">
                   <Link href="/event" className={buttonVariants()} replace>
                     Join Boxing
+                  </Link>
+                </div>
+                <div className="py-10">
+                  <Link
+                    href="/buytickets"
+                    className={buttonVariants({ variant: "outline" })}
+                    replace
+                  >
+                    join as a spectator
                   </Link>
                 </div>
               </div>
