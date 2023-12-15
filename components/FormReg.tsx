@@ -24,152 +24,51 @@ import { Label } from "@/components/ui/label"
 const prisma = new PrismaClient()
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function FormCard({ className, ...props }: UserAuthFormProps) {
+export function FormReg({ className, ...props }: UserAuthFormProps) {
   const { toast } = useToast()
+  const [weight, setWeight] = React.useState<string>("")
   const [email, setEmail] = React.useState<string>("")
 
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const [npm, setNpm] = React.useState<string>("")
-  const [token, setToken] = React.useState<string>("")
   const [isInputFocused, setIsInputFocused] = React.useState(false)
-  var order_id = uuid()
-
-  const process = async () => {
-    if (!token) {
-      const data = {
-        order_id: order_id,
-        name: datas ? datas.nama : "",
-        total: 5000,
-        email: email,
-        npm: npm,
-        status: "unpaid",
-      }
-
-      console.log("ini data", data)
-
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-      try {
-        const response = await axios.post(
-          "https://frightened-hare-wrap.cyclic.app/api/payment/process-transaction",
-          data,
-          config
-        )
-        console.log(response.data.token)
-
-        setToken(response.data.token)
-        const res = await axios.post("/api", data)
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "silahkan mengisi form dengan benar",
-          variant: "destructive",
-        })
-      }
-    } else {
-      window.snap.pay(
-        token,
-        {
-          onSuccess: (result: any) => {
-            toast({
-              title: "Success",
-              description: "Payment Success!",
-            })
-            window.location.href = "/buytickets/ticketbuyers"
-            console.log(result)
-            setToken("")
-          },
-          onPending: (result: any) => {
-            toast({
-              title: "Pending",
-              description: "waiting your payment!",
-            })
-            console.log(result)
-          },
-          onError: (error: any) => {
-            toast({
-              title: "Error",
-              description: "Payment Failed!",
-              variant: "destructive",
-            })
-
-            console.log(error)
-            setToken("")
-          },
-          onClose: () => {
-            toast({
-              title: "Error",
-              description: "Payment is not complete!",
-              variant: "destructive",
-            })
-          },
-        },
-        {
-          // Additional configuration options if needed
-        }
-      )
-    }
+  const disableButton = () => {
+    // Check if all required fields are filled
+    return !(weight && email)
   }
 
-  useEffect(() => {
-    if (token) {
-      window.snap.pay(
-        token,
-        {
-          onSuccess: (result: any) => {
-            toast({
-              title: "Success",
-              description: "Payment Success!",
-            })
-            console.log(result)
-            setToken("")
-          },
-          onPending: (result: any) => {
-            toast({
-              title: "Pending",
-              description: "waiting your payment!",
-            })
-            console.log(result)
-          },
-          onError: (error: any) => {
-            toast({
-              title: "Error",
-              description: "Payment Failed!",
-              variant: "destructive",
-            })
-
-            console.log(error)
-            setToken("")
-          },
-          onClose: () => {
-            toast({
-              title: "Error",
-              description: "Payment is not complete!",
-              variant: "destructive",
-            })
-          },
-        },
-        {
-          // Additional configuration options if needed
-        }
-      )
+  const process = async () => {
+    const data = {
+      npm: npm,
+      name: datas ? datas.nama : "",
+      class: datas ? datas.kelasBaru : "",
+      email: email,
+      weight: weight,
     }
-  }, [token])
 
-  useEffect(() => {
-    const scriptTag = document.createElement("script")
-    scriptTag.src = "https://app.midtrans.com/snap/snap.js"
-    scriptTag.async = true
+    console.log("ini data", data)
 
-    document.body.appendChild(scriptTag)
-
-    return () => {
-      document.body.removeChild(scriptTag)
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
-  }, [])
+    try {
+      const res = await axios.post("/api/registerboxing", data)
+      toast({
+        title: "Success",
+        description: "Registrasi berhasil",
+      })
+      window.location.href = "/registered"
+    } catch (error) {
+      toast({
+        title: "Error",
+        description:
+          "NPM anda sudah terdaftar atau kelas anda sudah melebihi 3 orang !",
+        variant: "destructive",
+      })
+    }
+  }
 
   const [datas, setdatas] = React.useState<{
     npm: string
@@ -217,7 +116,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
   return (
     <Card className="mx-auto md:w-[40%]">
       <CardHeader>
-        <CardTitle>registration for competition spectators</CardTitle>
+        <CardTitle>Boxing registration</CardTitle>
         <CardDescription>
           Make sure you have filled in the NPM correctly.
         </CardDescription>
@@ -254,6 +153,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
                   className="w-[100%]"
                   onFocus={() => setIsInputFocused(true)}
                   onBlur={() => setIsInputFocused(false)}
+                  required
                 />
 
                 {/* {datas === null && (
@@ -276,6 +176,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
                 autoCapitalize="none"
                 value={datas ? datas.nama : ""}
                 disabled={true}
+                required
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -287,10 +188,20 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
                 autoCapitalize="none"
                 value={datas ? datas.kelasBaru : ""}
                 disabled={true}
+                required
               />
             </div>
             {datas && (
               <>
+                <Label htmlFor="weight">Weight</Label>
+                <Input
+                  id="weight"
+                  placeholder="Your Weight"
+                  type="text"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  required
+                />
                 <Label htmlFor="weight">Email</Label>
                 <Input
                   id="email"
@@ -303,7 +214,7 @@ export function FormCard({ className, ...props }: UserAuthFormProps) {
                 <Button
                   onClick={process}
                   className={buttonVariants()}
-                  disabled={isLoading}
+                  disabled={disableButton()}
                 >
                   {isLoading && (
                     <FaSpinner className="mr-2 h-4 w-4 animate-spin" />

@@ -15,9 +15,7 @@ export const POST = async (request: Request) => {
       email: body.email,
       npm: body.npm,
       total: body.total,
-      weight: body.weight,
-      payment_status: "unpaid",
-      
+      payment_status: "unpaid"    
     },
 
     

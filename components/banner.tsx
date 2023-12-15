@@ -26,18 +26,25 @@ export default function Banner() {
               <p className="mt-8 text-base font-semibold leading-relaxed text-gray-800">
                 Unofficial Inter-class boxing competition.
               </p>
-              <div className="py-10">
-                <Link href="/event" className={buttonVariants()} replace>
-                  Join Now
-                </Link>
+              <div className=" flex w-[50%] justify-between">
+                <div className="py-10 ">
+                  <Link href="/buytickets" className={buttonVariants()} replace>
+                    join as a spectator
+                  </Link>
+                </div>
+                <div className="py-10">
+                  <Link href="/event" className={buttonVariants()} replace>
+                    Join Boxing
+                  </Link>
+                </div>
               </div>
             </div>
 
             <div className="hero-image col-span-6 px-10">
               <Image
-                src="/Sports1.png"
-                width={300}
-                height={400}
+                src="/Sports2.jpg"
+                width={700}
+                height={800}
                 alt="Picture of the author"
               />
             </div>

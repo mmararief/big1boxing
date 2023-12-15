@@ -9,6 +9,14 @@ export const siteConfig = {
       title: "Home",
       href: "/",
     },
+    {
+      title: "boxing participant",
+      href: "/registered",
+    },
+    {
+      title: "ticket buyers",
+      href: "/buytickets/ticketbuyers",
+    },
 
   ],
   links: {

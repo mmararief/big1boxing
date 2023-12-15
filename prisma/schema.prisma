@@ -15,7 +15,16 @@ model UserPayment {
   npm            String
   total          Int
   payment_status String
-  weight         String
   createdAt      DateTime @default(now())
   updateAt       DateTime @updatedAt
+}
+
+model UserBoxing {
+  npm       String   @id
+  name      String
+  class     String
+  email     String
+  weight    String
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 }

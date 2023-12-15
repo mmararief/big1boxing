@@ -9,15 +9,15 @@ import {
 } from "@/components/ui/table"
 
 interface User {
+  order_id: number
   name: string
   email: string
   npm: string
-  weight: string
-  class: string
+  total: number
 }
 async function getUser() {
   const res = await fetch(
-    "https://frightened-hare-wrap.cyclic.app/api/midtrans/getuserboxing",
+    "https://frightened-hare-wrap.cyclic.app/api/midtrans/getuser",
     { next: { revalidate: 0 } }
   )
   return res.json()
@@ -31,29 +31,28 @@ const RegisteredPage = async () => {
       <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
         <div className="flex max-w-[980px] flex-col items-start gap-2">
           <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-            Thank you for registering for the Big1boxing competition.
+            Thank you for purchasing tickets to watch Big1boxing competition.
           </h1>
         </div>
         <Table>
+          <TableCaption>
+            A list of users with payment status success.
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">No</TableHead>
               <TableHead>Name</TableHead>
               {/* <TableHead>Email</TableHead> */}
               <TableHead>NPM</TableHead>
-              <TableHead>Weight</TableHead>
-              <TableHead>Class</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="font-small text-sm">
             {users.map((user, index) => (
-              <TableRow key={user.npm}>
+              <TableRow key={user.order_id}>
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 {/* <TableCell>{user.email}</TableCell> */}
                 <TableCell>{user.npm}</TableCell>
-                <TableCell>{user.weight}</TableCell>
-                <TableCell>{user.class}</TableCell>
               </TableRow>
             ))}
           </TableBody>
